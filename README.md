@@ -1,4 +1,7 @@
 # Sistema Multiagente para Generación de Contenido de Blog
+Pablo Urbina Macip
+198055
+Agentes inteligentes
 
 ## Datos Generales del Alumno
 
