@@ -1,16 +1,12 @@
 # Sistema Multiagente para Generación de Contenido de Blog
-Pablo Urbina Macip
-198055
-Agentes inteligentes
-Link Al repositorio [text](https://github.com/Puma120/MultiAgente.git)
 
-## Datos Generales del Alumno
+## Datos Generales 
 
-**Nombre:** [Pablo - Tu nombre completo]  
+**Nombre:** [Pablo Urbina Macip]  
 **Materia:** Sistemas Multiagente  
 **Proyecto:** Arquitectura Multiagente Horizontal para Generación de Contenido  
 **Fecha:** 30 de Octubre de 2025  
-
+**Link Al repositorio:** [text](https://github.com/Puma120/MultiAgente.git)
 ---
 
 ## Introducción
