@@ -32,13 +32,18 @@ Un solo agente o sistema no puede manejar eficientemente todas estas tareas espe
 
 ### Agentes del Sistema
 
-| Agente | Rol | Modelo Gemini | Función |
-|--------|-----|---------------|---------|
-| **Agente Investigador** | Experto en búsqueda de información | `gemini-1.5-flash` | Investigar y recopilar datos sobre temas tecnológicos |
-| **Agente Redactor** | Experto en redacción creativa y técnica | `gemini-1.5-pro` | Transformar información en artículos atractivos |
-| **Agente Editor** | Experto en estilo y gramática | `gemini-1.0-pro` | Revisar, corregir y optimizar el contenido |
+| Agente | Rol | Modelo Gemini | Temperatura | Función |
+|--------|-----|---------------|-------------|---------|
+| **Agente Investigador** | Experto en búsqueda de información | `gemini-2.5-flash` | 0.3 (Preciso) | Investigar y recopilar datos objetivos sobre temas tecnológicos |
+| **Agente Redactor** | Experto en redacción creativa y técnica | `gemini-2.5-pro` | 0.5 (Balanceado) | Transformar información en artículos profesionales y estructurados |
+| **Agente Editor** | Experto en estilo y gramática | `gemini-2.0-flash` | 0.2 (Conservador) | Revisar, corregir y optimizar el contenido para publicación |
 
-> **Nota**: Se utilizan diferentes versiones de Gemini para demostrar la especialización de cada agente según sus necesidades (velocidad, calidad, eficiencia).
+> **Nota**: Se utilizan diferentes versiones de Gemini optimizadas para cada tarea:
+> - **gemini-2.5-flash**: Rápido y eficiente para investigación
+> - **gemini-2.5-pro**: Mayor capacidad para redacción creativa de calidad
+> - **gemini-2.0-flash**: Eficiente para revisión y edición precisa
+> 
+> Las temperaturas controladas aseguran respuestas serias y profesionales sin comentarios meta innecesarios.
 
 ---
 
@@ -47,20 +52,21 @@ Un solo agente o sistema no puede manejar eficientemente todas estas tareas espe
 ### Arquitectura del Sistema
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│           Sistema Multiagente (Arquitectura Horizontal)      │
-│                                                              │
-│  ┌──────────────┐      ┌──────────────┐      ┌──────────┐  │
-│  │   Agente     │ msg  │   Agente     │ msg  │  Agente  │  │
-│  │Investigador  │─────▶│  Redactor    │─────▶│  Editor  │  │
-│  │              │      │              │      │          │  │
-│  │ gemini-1.5-  │      │ gemini-1.5-  │      │ gemini-  │  │
-│  │   flash      │      │    pro       │      │  1.0-pro │  │
-│  └──────────────┘      └──────────────┘      └──────────┘  │
-│         │                     │                     │       │
-│         └─────────────────────┴─────────────────────┘       │
-│                    Sistema de Mensajería                    │
-└─────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────┐
+│           Sistema Multiagente (Arquitectura Horizontal)          │
+│                                                                  │
+│  ┌──────────────┐      ┌──────────────┐      ┌──────────────┐  │
+│  │   Agente     │ msg  │   Agente     │ msg  │   Agente     │  │
+│  │Investigador  │─────▶│  Redactor    │─────▶│   Editor     │  │
+│  │              │      │              │      │              │  │
+│  │ gemini-2.5-  │      │ gemini-2.5-  │      │ gemini-2.0-  │  │
+│  │   flash      │      │    pro       │      │   flash      │  │
+│  │ temp: 0.3    │      │ temp: 0.5    │      │ temp: 0.2    │  │
+│  └──────────────┘      └──────────────┘      └──────────────┘  │
+│         │                     │                     │           │
+│         └─────────────────────┴─────────────────────┘           │
+│                    Sistema de Mensajería                        │
+└─────────────────────────────────────────────────────────────────┘
 ```
 
 ### Componentes Principales
@@ -81,21 +87,36 @@ class MensajeAgente:
 #### 2. **Agente Investigador** (`AgenteInvestigador`)
 
 **Especialización**: Búsqueda y recopilación de información  
-**Modelo**: `gemini-1.5-flash` (Rápido y eficiente)
+**Modelo**: `gemini-2.5-flash` (Rápido y eficiente)  
+**Temperatura**: `0.3` (Respuestas precisas y objetivas)
 
 **Acción Principal**: `investigar(tema)`
 - **Entrada**: Tema de investigación
 - **Proceso**: 
-  - Analiza el tema
-  - Recopila datos, estadísticas y tendencias
-  - Identifica casos de uso
-  - Simula referencias bibliográficas
-- **Salida**: Envía datos al Agente Redactor vía sistema de mensajería
+  - Analiza el tema con enfoque objetivo
+  - Recopila datos, estadísticas y tendencias actuales
+  - Identifica casos de uso prácticos
+  - Simula referencias bibliográficas confiables
+  - **Instrucciones estrictas**: Sin comentarios meta, solo información directa
+- **Salida**: Envía datos estructurados al Agente Redactor vía sistema de mensajería
 
 ```python
 def investigar(self, tema: str) -> str:
-    # Usar Gemini 1.5 Flash para investigación rápida
-    prompt = f"Investigar sobre: {tema}..."
+    # Configuración con temperatura baja para precisión
+    self.generation_config = genai.GenerationConfig(
+        temperature=0.3,
+        top_p=0.8,
+        top_k=40
+    )
+    
+    # Prompt con instrucciones estrictas
+    prompt = f"""
+    INSTRUCCIONES ESTRICTAS:
+    - Proporciona SOLO la información de investigación
+    - NO escribas frases meta como "Aquí tienes..."
+    - Comienza directamente con el contenido
+    ...
+    """
     response = self.modelo.generate_content(prompt)
     
     # Enviar mensaje al siguiente agente
@@ -109,24 +130,41 @@ def investigar(self, tema: str) -> str:
 #### 3. **Agente Redactor** (`AgenteRedactor`)
 
 **Especialización**: Redacción creativa y técnica  
-**Modelo**: `gemini-1.5-pro` (Mayor calidad de redacción)
+**Modelo**: `gemini-2.5-pro` (Mayor capacidad para tareas complejas)  
+**Temperatura**: `0.5` (Balance entre creatividad y profesionalismo)
 
 **Acción Principal**: `redactar()`
-- **Entrada**: Recibe datos del Agente Investigador
+- **Entrada**: Recibe datos estructurados del Agente Investigador
 - **Proceso**:
-  - Crea título atractivo
-  - Estructura el contenido en secciones
-  - Desarrolla introducción y conclusión
-  - Mantiene tono profesional
-- **Salida**: Envía borrador al Agente Editor
+  - Crea título claro y relevante (sin símbolos especiales)
+  - Estructura el contenido en secciones lógicas con subtítulos
+  - Desarrolla introducción profesional y conclusión sólida
+  - Mantiene tono serio, técnico y objetivo
+  - **Instrucciones estrictas**: Sin introducciones meta, directo al contenido
+- **Salida**: Envía borrador profesional al Agente Editor
 
 ```python
 def redactar(self) -> str:
+    # Configuración balanceada
+    self.generation_config = genai.GenerationConfig(
+        temperature=0.5,
+        top_p=0.85,
+        top_k=40
+    )
+    
     # Obtener datos del mensaje
     mensaje = self.sistema_mensajeria.obtener_ultimo_mensaje(self.nombre)
     datos = mensaje.contenido
     
-    # Usar Gemini 1.5 Pro para mejor calidad
+    # Prompt con instrucciones estrictas
+    prompt = f"""
+    INSTRUCCIONES ESTRICTAS:
+    - Escribe SOLO el artículo, sin comentarios meta
+    - NO escribas "Aquí tienes el artículo..."
+    - Comienza directamente con el TÍTULO
+    - Mantén tono serio y profesional
+    ...
+    """
     response = self.modelo.generate_content(prompt)
     
     # Enviar borrador al editor
@@ -140,24 +178,44 @@ def redactar(self) -> str:
 #### 4. **Agente Editor** (`AgenteEditor`)
 
 **Especialización**: Revisión, corrección y optimización  
-**Modelo**: `gemini-1.0-pro` (Eficiente para revisión)
+**Modelo**: `gemini-2.0-flash` (Rápido y preciso para edición)  
+**Temperatura**: `0.2` (Muy conservador, ediciones mínimas y precisas)
 
 **Acción Principal**: `revisar()`
 - **Entrada**: Recibe borrador del Agente Redactor
 - **Proceso**:
-  - Corrige ortografía y gramática
-  - Mejora coherencia y fluidez
-  - Optimiza para SEO
-  - Verifica estilo consistente
-- **Salida**: Artículo final listo para publicación
+  - **Elimina cualquier texto meta o introducción innecesaria**
+  - Corrige errores ortográficos y gramaticales
+  - Mejora coherencia y fluidez del texto
+  - Optimiza títulos y subtítulos para SEO (sin símbolos especiales)
+  - Verifica tono serio y profesional
+  - Asegura estilo consistente y estructura lógica
+  - **Instrucciones estrictas**: Devolver solo el artículo editado
+- **Salida**: Artículo final limpio y listo para publicación
 
 ```python
 def revisar(self) -> str:
+    # Configuración muy conservadora
+    self.generation_config = genai.GenerationConfig(
+        temperature=0.2,
+        top_p=0.75,
+        top_k=30
+    )
+    
     # Obtener borrador
     mensaje = self.sistema_mensajeria.obtener_ultimo_mensaje(self.nombre)
     borrador = mensaje.contenido
     
-    # Revisar con Gemini 1.0 Pro
+    # Prompt con instrucciones estrictas
+    prompt = f"""
+    INSTRUCCIONES ESTRICTAS:
+    - Devuelve SOLO el artículo editado
+    - NO escribas "Aquí está el artículo editado..."
+    - Elimina cualquier texto meta del borrador
+    - Comienza directamente con el artículo
+    - Mantén tono serio y profesional
+    ...
+    """
     response = self.modelo.generate_content(prompt)
     
     return articulo_final
@@ -206,11 +264,14 @@ FIN - ¡TAREA COMPLETADA!
 ### Tecnologías Utilizadas
 
 - **Python 3.x**: Lenguaje de programación principal
-- **Google Gemini API**: 
-  - `gemini-1.5-flash`: Para investigación rápida
-  - `gemini-1.5-pro`: Para redacción de calidad
-  - `gemini-1.0-pro`: Para revisión eficiente
-- **python-dotenv**: Gestión de variables de entorno
+- **Google Gemini API (Modelos de última generación)**: 
+  - `gemini-2.5-flash`: Investigación rápida y eficiente con respuestas precisas
+  - `gemini-2.5-pro`: Redacción de alta calidad con capacidad mejorada
+  - `gemini-2.0-flash`: Revisión y edición rápida y precisa
+- **Control de Temperatura**:
+  - Temperature 0.2-0.3: Respuestas conservadoras y objetivas
+  - Temperature 0.5: Balance entre creatividad y profesionalismo
+- **python-dotenv**: Gestión segura de variables de entorno
 - **google-generativeai**: SDK oficial de Google Gemini
 
 ---
@@ -250,34 +311,53 @@ python MultiAgente.py
 
 **Salida Esperada**:
 ```
-🚀 INICIALIZANDO SISTEMA MULTIAGENTE
+================================================================================
+INICIALIZANDO SISTEMA MULTIAGENTE
    Arquitectura: Horizontal (Colaboración entre Pares)
+================================================================================
 
-✅ Agente Investigador inicializado con modelo gemini-1.5-flash
-✅ Agente Redactor inicializado con modelo gemini-1.5-pro
-✅ Agente Editor inicializado con modelo gemini-1.0-pro
+Agente Investigador inicializado con modelo gemini-2.5-flash
+Agente Redactor inicializado con modelo gemini-2.5-pro
+Agente Editor inicializado con modelo gemini-2.0-flash
+
+================================================================================
+SISTEMA MULTIAGENTE INICIALIZADO CORRECTAMENTE
+================================================================================
 
 📍 FASE 1: INVESTIGACIÓN
 🔍 Agente Investigador está investigando sobre: 'Inteligencia Artificial...'
+   Modelo utilizado: gemini-2.5-flash
 ✅ Investigación completada. [N] caracteres de información recopilados.
 
-📨 MENSAJE ENVIADO
+================================================================================
+MENSAJE ENVIADO
    De: Agente Investigador
    Para: Agente Redactor
+   Hora: [HH:MM:SS]
+================================================================================
 
 📍 FASE 2: REDACCIÓN
 ✍️  Agente Redactor está redactando el artículo...
+   Modelo utilizado: gemini-2.5-pro
+   Datos recibidos de: Agente Investigador
 ✅ Borrador completado. [N] caracteres generados.
 
-📨 MENSAJE ENVIADO
+================================================================================
+MENSAJE ENVIADO
    De: Agente Redactor
    Para: Agente Editor
+   Hora: [HH:MM:SS]
+================================================================================
 
 📍 FASE 3: EDICIÓN Y REVISIÓN
 📝 Agente Editor está revisando el artículo...
+   Modelo utilizado: gemini-2.0-flash
+   Borrador recibido de: Agente Redactor
 ✅ Revisión completada. Artículo final con [N] caracteres.
 
-🎉 ¡TAREA COMPLETADA! Artículo Finalizado.
+########################################
+¡TAREA COMPLETADA! Artículo Finalizado.
+########################################
 
 💾 Artículo guardado en: articulo_[timestamp].txt
 ```
