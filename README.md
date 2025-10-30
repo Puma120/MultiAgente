@@ -53,16 +53,16 @@ Un solo agente o sistema no puede manejar eficientemente todas estas tareas espe
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│           Sistema Multiagente (Arquitectura Horizontal)          │
-│                                                                  │
-│  ┌──────────────┐      ┌──────────────┐      ┌──────────────┐  │
-│  │   Agente     │ msg  │   Agente     │ msg  │   Agente     │  │
-│  │Investigador  │─────▶│  Redactor    │─────▶│   Editor     │  │
-│  │              │      │              │      │              │  │
-│  │ gemini-2.5-  │      │ gemini-2.5-  │      │ gemini-2.0-  │  │
-│  │   flash      │      │    pro       │      │   flash      │  │
-│  │ temp: 0.3    │      │ temp: 0.5    │      │ temp: 0.2    │  │
-│  └──────────────┘      └──────────────┘      └──────────────┘  │
+│           Sistema Multiagente (Arquitectura Horizontal)         │
+│                                                                 │
+│  ┌──────────────┐      ┌──────────────┐      ┌──────────────┐   │
+│  │   Agente     │ msg  │   Agente     │ msg  │   Agente     │   │
+│  │Investigador  │─────▶│  Redactor    │─────▶│   Editor    │   │
+│  │              │      │              │      │              │   │
+│  │ gemini-2.5-  │      │ gemini-2.5-  │      │ gemini-2.0-  │   │
+│  │   flash      │      │    pro       │      │   flash      │   │ 
+│  │ temp: 0.3    │      │ temp: 0.5    │      │ temp: 0.2    │   │
+│  └──────────────┘      └──────────────┘      └──────────────┘   │
 │         │                     │                     │           │
 │         └─────────────────────┴─────────────────────┘           │
 │                    Sistema de Mensajería                        │
@@ -324,10 +324,10 @@ Agente Editor inicializado con modelo gemini-2.0-flash
 SISTEMA MULTIAGENTE INICIALIZADO CORRECTAMENTE
 ================================================================================
 
-📍 FASE 1: INVESTIGACIÓN
-🔍 Agente Investigador está investigando sobre: 'Inteligencia Artificial...'
+FASE 1: INVESTIGACIÓN
+Agente Investigador está investigando sobre: 'Inteligencia Artificial...'
    Modelo utilizado: gemini-2.5-flash
-✅ Investigación completada. [N] caracteres de información recopilados.
+Investigación completada. [N] caracteres de información recopilados.
 
 ================================================================================
 MENSAJE ENVIADO
@@ -336,11 +336,11 @@ MENSAJE ENVIADO
    Hora: [HH:MM:SS]
 ================================================================================
 
-📍 FASE 2: REDACCIÓN
-✍️  Agente Redactor está redactando el artículo...
+FASE 2: REDACCIÓN
+Agente Redactor está redactando el artículo...
    Modelo utilizado: gemini-2.5-pro
    Datos recibidos de: Agente Investigador
-✅ Borrador completado. [N] caracteres generados.
+Borrador completado. [N] caracteres generados.
 
 ================================================================================
 MENSAJE ENVIADO
@@ -349,17 +349,17 @@ MENSAJE ENVIADO
    Hora: [HH:MM:SS]
 ================================================================================
 
-📍 FASE 3: EDICIÓN Y REVISIÓN
-📝 Agente Editor está revisando el artículo...
+FASE 3: EDICIÓN Y REVISIÓN
+Agente Editor está revisando el artículo...
    Modelo utilizado: gemini-2.0-flash
    Borrador recibido de: Agente Redactor
-✅ Revisión completada. Artículo final con [N] caracteres.
+Revisión completada. Artículo final con [N] caracteres.
 
 ########################################
 ¡TAREA COMPLETADA! Artículo Finalizado.
 ########################################
 
-💾 Artículo guardado en: articulo_[timestamp].txt
+Artículo guardado en: articulo_[timestamp].txt
 ```
 
 #### Prueba 2: Tema Personalizado
@@ -391,10 +391,10 @@ El sistema muestra todos los mensajes intercambiados:
 ### Manejo de Errores
 
 El sistema incluye manejo de errores para:
-- ❌ API Key no encontrada
-- ❌ Errores de conexión con Gemini API
-- ❌ Mensajes no recibidos
-- ❌ Fallas en generación de contenido
+- API Key no encontrada
+- Errores de conexión con Gemini API
+- Mensajes no recibidos
+- Fallas en generación de contenido
 
 ---
 
@@ -424,11 +424,11 @@ El sistema incluye manejo de errores para:
 
 ### Ventajas de la Arquitectura Multiagente
 
-✅ **Modularidad**: Cada agente es independiente y reutilizable  
-✅ **Escalabilidad**: Fácil agregar nuevos agentes (ej: Agente SEO, Agente de Imágenes)  
-✅ **Especialización**: Cada agente usa el modelo más apropiado para su tarea  
-✅ **Eficiencia**: Procesamiento paralelo potencial  
-✅ **Mantenibilidad**: Código organizado y fácil de mantener  
+ **Modularidad**: Cada agente es independiente y reutilizable  
+ **Escalabilidad**: Fácil agregar nuevos agentes (ej: Agente SEO, Agente de Imágenes)  
+ **Especialización**: Cada agente usa el modelo más apropiado para su tarea  
+ **Eficiencia**: Procesamiento paralelo potencial  
+ **Mantenibilidad**: Código organizado y fácil de mantener  
 
 ### Desafíos Encontrados
 
@@ -500,7 +500,7 @@ MultiAgente/
 
 ## Autor
 
-**Pablo**  
+**Pablo Urbina Macip**  
 GitHub: [@Puma120](https://github.com/Puma120)  
 Proyecto: Sistema Multiagente para Generación de Contenido  
 Fecha: Octubre 2025
